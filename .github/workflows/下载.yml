@@ -27,9 +27,16 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         retain_days: 0
         keep_minimum_runs: 0
-    - name: dowload Toolchain
+    - name: Install UPX
+      uses: crazy-max/ghaction-upx@v3
+      with:
+        version: latest
+        install-only: true
+    - name: dowload vh
       run: | 
         mkdir -p VH-File 
+        TARGET_DIR="./VH-File"
+        
         download() {
           filename=$1
           fileurl=$2
@@ -42,6 +49,25 @@ jobs:
               echo -e "\e[31m失败\e[0m\n\n"
               sleep 4
           fi
+        }
+        
+        process_files() {
+          for file in "$TARGET_DIR"/*; do
+              if [ -f "$file" ]; then  # 确保是文件
+                  echo -e "正在检测文件：\e[36m$file\e[0m"
+
+                  if upx -t "$file" &>/dev/null; then
+                      echo -e "\e[32m$file 已被 UPX 压缩，正在解压...\e[0m"
+                      if upx -d "$file" &>/dev/null; then
+                          echo -e "\e[32m解压成功：$file\e[0m"
+                      else
+                          echo -e "\e[33m解压失败！可能是不支持的格式，跳过...\e[0m"
+                      fi
+                  else
+                      echo -e "\e[33m$file 未被 UPX 压缩，跳过。\e[0m"
+                  fi
+              fi
+          done
         }
         
         echo -e "\n开始下载  \e[33mLiunx通用版程序...\e[0m"
@@ -95,6 +121,8 @@ jobs:
         download vhusbd-linux-x86_64-Goldmont_Plus-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64gmp
         download vhusbd-linux-x86_64-Bonnell-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64bl
         download vhusbd-linux-x86_64-Tremont-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64tm
+
+        process_files
         
         echo -e "\n开始下载  \e[33mWin10/Server2016程序...\e[0m"
         download vhusbd-win64.exe https://www.virtualhere.com/sites/default/files/usbserver/vhusbdwin64.exe
