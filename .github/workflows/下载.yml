@@ -2,14 +2,6 @@ name: 下载VirtualHere
 on:
   workflow_dispatch:
     inputs:
-      URL:
-        description: '请输入文件下载链接地址'
-        required: true
-        default: ''
-      NAME:
-        description: '是否重新命名文件'
-        required: false
-        default: ''
       TAG:
         description: '发布Release的版本号'
         required: true
@@ -106,6 +98,15 @@ jobs:
         
         echo -e "\n开始下载  \e[33mWin10/Server2016程序...\e[0m"
         download vhusbd-win64.exe https://www.virtualhere.com/sites/default/files/usbserver/vhusbdwin64.exe
+
+        echo -e "\n开始下载  \e[33mMac版程序...\e[0m"
+        download VirtualHereServerUniversal.dmg https://www.virtualhere.com/sites/default/files/usbserver/VirtualHereServerUniversal.dmg
+
+        echo -e "\n开始下载  \e[33m威联通版程序...\e[0m"
+        download VirtualHere.qpkg https://www.virtualhere.com/sites/default/files/usbserver/VirtualHere_${{ github.event.inputs.TAG }}.qpkg
+
+        echo -e "\n开始下载  \e[33m群晖版程序...\e[0m"
+        download virtualhere_DSM6.spk https://www.virtualhere.com/sites/default/files/usbserver/virtualhere_${{ github.event.inputs.TAG }}_noarch_6.0-7321.spk
         
         echo "dowload_time=$(date '+%Y年%m月%d日%H:%M:%S' | jq -sRr @uri)" >> $GITHUB_ENV
     - name: Release
@@ -115,8 +116,11 @@ jobs:
         body: |
            > ### ![](https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD%E6%97%B6%E9%97%B4-${{ env.dowload_time }}-8267?logo=github&labelColor=%E9%A1%BB)![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ github.event.inputs.TAG }}/total?label=%E4%B8%8B%E8%BD%BD%E6%AC%A1%E6%95%B0&logo=github)
 
-            **`-Generic`** 表示通用版本
-            **`-Optimized`** 表示CPU优化版本
+            **`-Generic`** 表示Linux通用版本
+            **`-Optimized`** 表示Liunx-CPU优化版本
+            **`VirtualHereServerUniversal.dmg`** 表示MacOS版本
+            **`VirtualHere.qpkg`** 表示威联通NAS版本
+            **`virtualhere_noarch_6.0-7321.spk`** 表示群晖NAS-DSM6版本
             
            ${{ github.event.inputs.INFO }}
            
