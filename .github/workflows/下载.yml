@@ -107,6 +107,9 @@ jobs:
 
         echo -e "\n开始下载  \e[33m群晖版程序...\e[0m"
         download virtualhere_DSM6.spk https://www.virtualhere.com/sites/default/files/usbserver/virtualhere_${{ github.event.inputs.TAG }}_noarch_6.0-7321.spk
+
+        echo -e "\n开始下载  \e[33m安卓版程序...\e[0m"
+        download virtualhere_server.apk https://www.virtualhere.com/sites/default/files/usbserver/virtualhere_server.apk
         
         echo "dowload_time=$(date '+%Y年%m月%d日%H:%M:%S' | jq -sRr @uri)" >> $GITHUB_ENV
     - name: Release
@@ -116,11 +119,12 @@ jobs:
         body: |
            > ### ![](https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD%E6%97%B6%E9%97%B4-${{ env.dowload_time }}-8267?logo=github&labelColor=%E9%A1%BB)![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ github.event.inputs.TAG }}/total?label=%E4%B8%8B%E8%BD%BD%E6%AC%A1%E6%95%B0&logo=github)
 
-            **`-Generic`** 表示Linux通用版本
-            **`-Optimized`** 表示Liunx-CPU优化版本
-            **`VirtualHereServerUniversal.dmg`** 表示MacOS版本
-            **`VirtualHere.qpkg`** 表示威联通NAS版本
-            **`virtualhere_noarch_6.0-7321.spk`** 表示群晖NAS-DSM6版本
+            **`-Generic`** 为Linux通用版本
+            **`-Optimized`** 为Liunx-CPU优化版本
+            **`VirtualHereServerUniversal.dmg`** 为MacOS版本
+            **`VirtualHere.qpkg`** 为威联通NAS版本
+            **`virtualhere_noarch_6.0-7321.spk`** 为群晖NAS-DSM6版本
+            **`virtualhere_server.apk`** 为安卓版本
             
            ${{ github.event.inputs.INFO }}
            
