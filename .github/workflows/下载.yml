@@ -1,0 +1,127 @@
+name: 下载VirtualHere
+on:
+  workflow_dispatch:
+    inputs:
+      URL:
+        description: '请输入文件下载链接地址'
+        required: true
+        default: ''
+      NAME:
+        description: '是否重新命名文件'
+        required: false
+        default: ''
+      TAG:
+        description: '发布Release的版本号'
+        required: true
+        default: ''
+      INFO:
+        description: '发布Release的说明'
+        required: false
+        default: ''
+env:
+  TZ: Asia/Shanghai
+permissions:
+  contents: write
+  actions: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: delete-workflow-runs
+      uses: Mattraks/delete-workflow-runs@main
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        retain_days: 0
+        keep_minimum_runs: 0
+    - name: dowload Toolchain
+      run: | 
+        mkdir -p VH-File && cd VH-File
+        download() {
+          filename=$1
+          fileurl=$2
+          echo -e "\n开始下载 \e[35m${filename}\e[0m  \e[36m${fileurl}\e[0m"
+
+          curl -Lk -o "./VH-File/${filename}" "${fileurl}" || wget --no-check-certificate -O "./VH-File/${filename}" "${fileurl}"
+          if [ $? -eq 0 ]; then
+              echo -e "\e[32m成功\e[0m"
+          else
+              echo -e "\e[31m失败\e[0m\n\n"
+              sleep 4
+          fi
+        }
+        
+        echo -e "\n开始下载  \e[33mLiunx通用版程序...\e[0m"
+        download vhusbd-linux-i386-Generic https://www.virtualhere.com/sites/default/files/usbserver/vhusbdi386
+        download vhusbd-linux-x86_64-Generic https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64
+        download vhusbd-linux-arm-Generic https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm
+        download vhusbd-linux-arm64-Generic https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64
+        download vhusbd-linux-mips-Generic https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmips
+        download vhusbd-linux-mipsel-Generic https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmipsel
+        download vhusbd-linux-riscv64-Generic https://www.virtualhere.com/sites/default/files/usbserver/vhusbdriscv64
+
+        echo -e "\n开始下载  \e[33mLiunxCPU优化版程序...\e[0m"
+        download vhusbd-linux-armpi_arm1176jzf-s_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmpi
+        download vhusbd-linux-armpi2_Cortex-A7_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmpi2
+        download vhusbd-linux-armpi3-Cortex-A53_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmpi3
+        download vhusbd-linux-armpi4-Cortex-A72_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmpi4
+        download vhusbd-linux-armbb-Cortex-A8_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmbb
+        download vhusbd-linux-armc1-Cortex-A5_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarmc1
+        download vhusbd-linux-arma9s-Cortex-A9_sf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarma9s
+        download vhusbd-linux-arma15a7-Samsung_Exynos5422-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarma15a7
+        download vhusbd-linux-arma9h-Cortex-A9_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarma9h
+        download vhusbd-linux-arma17-Cortex-A17_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarma17
+        download vhusbd-linux-arma15-Cortex-A15_hf-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarma15
+        
+        download vhusbd-linux-arm64-Cortex-A53-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a53
+        download vhusbd-linux-arm64-Cortex-A57-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a57
+        download vhusbd-linux-arm64-Cortex-A72-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a72
+        download vhusbd-linux-arm64-Cortex-A73-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a73
+        download vhusbd-linux-arm64-Cortex-A56-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a76
+        download vhusbd-linux-arm64-Cortex-A53-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a53
+        download vhusbd-linux-arm64-Cortex-A53-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a53
+        download vhusbd-linux-arm64-RK3399-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdarm64a72a53
+
+        download vhusbd-linux-mips_24kc-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmips24kc
+        download vhusbd-linux-mips_74kc-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmips74kc
+        download vhusbd-linux-mips_74kf1-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmips74kf1_1
+
+        download vhusbd-linux-mipsel_24kec-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmipsel24kec
+        download vhusbd-linux-mipsel_74kc-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmipsel74kc
+        download vhusbd-linux-mipsel_1004kc-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdmipsel1004Kc
+
+        download vhusbd-linux-x86_64-Intel-Core2-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64c2
+        download vhusbd-linux-x86_64-Westmere-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64wm
+        download vhusbd-linux-x86_64-Sandy-Bridge-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64sb
+        download vhusbd-linux-x86_64-Ivy-Bridge-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64ib
+        download vhusbd-linux-x86_64-Haswell-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64hw
+        download vhusbd-linux-x86_64-Broadwell-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64bw
+        download vhusbd-linux-x86_64-Silvermont-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64sm
+        download vhusbd-linux-x86_64-Skylake-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64sl
+        download vhusbd-linux-x86_64-Goldmont-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64gm
+        download vhusbd-linux-x86_64-Goldmont_Plus-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64gmp
+        download vhusbd-linux-x86_64-Bonnell-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64bl
+        download vhusbd-linux-x86_64-Tremont-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64tm
+        
+        echo -e "\n开始下载  \e[33mWin10/Server2016程序...\e[0m"
+        download vhusbd-win64.exe https://www.virtualhere.com/sites/default/files/usbserver/vhusbdwin64.exe
+        
+        echo "dowload_time=$(date '+%Y年%m月%d日%H:%M:%S' | jq -sRr @uri)" >> $GITHUB_ENV
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        body: |
+           > ### ![](https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD%E6%97%B6%E9%97%B4-${{ env.dowload_time }}-8267?logo=github&labelColor=%E9%A1%BB)![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ github.event.inputs.TAG }}/total?label=%E4%B8%8B%E8%BD%BD%E6%AC%A1%E6%95%B0&logo=github)
+
+            **`-Generic`** 表示通用版本
+            **`-Optimized`** 表示CPU优化版本
+            
+           ${{ github.event.inputs.INFO }}
+           
+        tag_name: ${{ github.event.inputs.TAG }}
+        files: VH-File/*
+        
+
+         
