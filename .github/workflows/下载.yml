@@ -122,10 +122,10 @@ jobs:
         download vhusbd-linux-x86_64-Bonnell-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64bl
         download vhusbd-linux-x86_64-Tremont-Optimized https://www.virtualhere.com/sites/default/files/usbserver/vhusbdx86_64tm
 
-        process_files
-        
         echo -e "\n开始下载  \e[33mWin10/Server2016程序...\e[0m"
         download vhusbd-win64.exe https://www.virtualhere.com/sites/default/files/usbserver/vhusbdwin64.exe
+
+        process_files
 
         echo -e "\n开始下载  \e[33mMac版程序...\e[0m"
         download VirtualHereServerUniversal.dmg https://www.virtualhere.com/sites/default/files/usbserver/VirtualHereServerUniversal.dmg
@@ -153,6 +153,7 @@ jobs:
             **`VirtualHere.qpkg`** 为威联通NAS版本
             **`virtualhere_noarch_6.0-7321.spk`** 为群晖NAS-DSM6版本
             **`virtualhere_server.apk`** 为安卓版本
+            **`vhusbdwin64.exe`** 为PC版本
             
            ${{ github.event.inputs.INFO }}
            
