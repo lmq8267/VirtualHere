@@ -1,5 +1,7 @@
 name: 下载VirtualHere
 on:
+  schedule:
+    - cron: '0 3 * * *'
   workflow_dispatch:
     inputs:
       TAG:
@@ -10,23 +12,44 @@ on:
         description: '发布Release的说明'
         required: false
         default: ''
+      bj:
+        description: '强制使用手动编译'
+        required: true
+        default: false
+        type: boolean
 env:
   TZ: Asia/Shanghai
 permissions:
   contents: write
   actions: write
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      ver: ${{ steps.getversion.outputs.ver }}
+      cver: ${{ steps.getversion.outputs.cver }}
+    steps:
+    - name: check
+      id: getversion
+      run: |
+        ver=$(curl -Lk https://www.virtualhere.com/usb_server_software | awk -F 'Version ' '{print $2}' | awk -F '<' '{print $1}' | grep -Eo '^[0-9]+(\.[0-9]+)*$' | tr -d ' \n')
+        cver=`curl https://api.github.com/repos/${{ github.repository }}/releases/latest | jq -r '.tag_name'`
+        echo "最新版本：${ver}  ；当前版本：${cver}"
+        echo "ver=${ver}" >> $GITHUB_OUTPUT
+        echo "cver=${cver}" >> $GITHUB_OUTPUT
+    -  name: delete-workflow-runs
+       uses: Mattraks/delete-workflow-runs@main
+       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        retain_days: 0
+        keep_minimum_runs: 0
   build:
+    needs: check
+    if: ${{ github.event.inputs.bj == 'true' || (github.event.inputs.bj != 'true' && needs.check.outputs.ver != needs.check.outputs.cver) }}
     runs-on: ubuntu-latest
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
-    - name: delete-workflow-runs
-      uses: Mattraks/delete-workflow-runs@main
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        retain_days: 0
-        keep_minimum_runs: 0
     - name: Install UPX
       uses: crazy-max/ghaction-upx@v3
       with:
@@ -36,7 +59,15 @@ jobs:
       run: | 
         mkdir -p VH-File 
         TARGET_DIR="./VH-File"
-        
+        if [[ -z "${{ github.event.inputs.TAG }}" ]] ; then
+           vtag=${{ needs.check.outputs.ver }}
+           echo "vtag=${vtag}" >> $GITHUB_OUTPUT
+           echo "下载自动获取定版本：${vtag}"
+        else
+           vtag=${{ github.event.inputs.TAG }}
+           echo "vtag=${vtag}" >> $GITHUB_OUTPUT
+           echo "下载手动指定版本：${vtag}"
+        fi
         download() {
           filename=$1
           fileurl=$2
@@ -131,10 +162,10 @@ jobs:
         download VirtualHereServerUniversal.dmg https://www.virtualhere.com/sites/default/files/usbserver/VirtualHereServerUniversal.dmg
 
         echo -e "\n开始下载  \e[33m威联通版程序...\e[0m"
-        download VirtualHere.qpkg https://www.virtualhere.com/sites/default/files/usbserver/VirtualHere_${{ github.event.inputs.TAG }}.qpkg
+        download VirtualHere.qpkg https://www.virtualhere.com/sites/default/files/usbserver/VirtualHere_${{ env.vtag }}.qpkg
 
         echo -e "\n开始下载  \e[33m群晖版程序...\e[0m"
-        download virtualhere_DSM6.spk https://www.virtualhere.com/sites/default/files/usbserver/virtualhere_${{ github.event.inputs.TAG }}_noarch_6.0-7321.spk
+        download virtualhere_DSM6.spk https://www.virtualhere.com/sites/default/files/usbserver/virtualhere_${{ env.vtag }}_noarch_6.0-7321.spk
 
         echo -e "\n开始下载  \e[33m安卓版程序...\e[0m"
         download virtualhere_server.apk https://www.virtualhere.com/sites/default/files/usbserver/virtualhere_server.apk
@@ -145,7 +176,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         body: |
-           > ### ![](https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD%E6%97%B6%E9%97%B4-${{ env.dowload_time }}-8267?logo=github&labelColor=%E9%A1%BB)![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ github.event.inputs.TAG }}/total?label=%E4%B8%8B%E8%BD%BD%E6%AC%A1%E6%95%B0&logo=github)
+           > ### ![](https://img.shields.io/badge/%E4%B8%8B%E8%BD%BD%E6%97%B6%E9%97%B4-${{ env.dowload_time }}-8267?logo=github&labelColor=%E9%A1%BB)![](https://img.shields.io/github/downloads/${{ github.repository }}/${{ env.vtag }}/total?label=%E4%B8%8B%E8%BD%BD%E6%AC%A1%E6%95%B0&logo=github)
 
             **`-Generic`** 为Linux通用版本
             **`-Optimized`** 为Liunx-CPU优化版本
@@ -157,7 +188,7 @@ jobs:
             
            ${{ github.event.inputs.INFO }}
            
-        tag_name: ${{ github.event.inputs.TAG }}
+        tag_name: ${{ env.vtag }}
         files: VH-File/*
         
 
