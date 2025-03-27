@@ -75,4 +75,4 @@ options:
 
 **`SSLCAFile`** 此文件包含使用服务器和客户端 SSL 证书的 PEM 编码证书颁发机构 (CA) 可信根证书。
 
-**`VirtualHere`** 服务器还包含一个事件处理系统，可以将其配置为在特定时间调用脚本。这对于解决设备怪癖或执行特定操作（如日志记录）很有用，请参见 [此处](https://www.virtualhere.com/quirks)
+此外 `VirtualHere` 服务器还包含一个事件处理系统，可以将其配置为在特定时间调用脚本。这对于解决设备怪癖或执行特定操作（如日志记录）很有用，请参见 [此处](https://www.virtualhere.com/quirks)
