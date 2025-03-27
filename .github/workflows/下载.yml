@@ -6,7 +6,7 @@ on:
     inputs:
       TAG:
         description: '发布Release的版本号'
-        required: true
+        required: false
         default: ''
       INFO:
         description: '发布Release的说明'
