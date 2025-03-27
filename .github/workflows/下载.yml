@@ -61,11 +61,11 @@ jobs:
         TARGET_DIR="./VH-File"
         if [[ -z "${{ github.event.inputs.TAG }}" ]] ; then
            vtag=${{ needs.check.outputs.ver }}
-           echo "vtag=${vtag}" >> $GITHUB_OUTPUT
+           echo "vtag=${vtag}" >> $GITHUB_ENV
            echo "下载自动获取定版本：${vtag}"
         else
            vtag=${{ github.event.inputs.TAG }}
-           echo "vtag=${vtag}" >> $GITHUB_OUTPUT
+           echo "vtag=${vtag}" >> $GITHUB_ENV
            echo "下载手动指定版本：${vtag}"
         fi
         download() {
